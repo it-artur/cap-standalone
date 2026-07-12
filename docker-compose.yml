@@ -1,27 +1,41 @@
 services:
   cap:
     image: tiago2/cap:latest
-    network_mode: host
+    container_name: cap
+    ports:
+      - "3000:3000"
     environment:
-      ADMIN_KEY: ${ADMIN_KEY:?set ADMIN_KEY in .env or Dokploy secrets}
-      REDIS_URL: redis://127.0.0.1:6379
+      ADMIN_KEY: ${ADMIN_KEY:?set ADMIN_KEY in Dokploy secrets}
+      REDIS_URL: redis://valkey:6379
     depends_on:
       valkey:
         condition: service_healthy
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=cap-standalone-network"
+      - "traefik.http.routers.cap.entrypoints=websecure"
+      - "traefik.http.routers.cap.rule=Host(`cap.itartur.ru`)"
+      - "traefik.http.routers.cap.tls=true"
+      - "traefik.http.routers.cap.tls.certresolver=letsencrypt"
+      - "traefik.http.services.cap.loadbalancer.server.port=3000"
 
   valkey:
     image: valkey/valkey:9-alpine
-    network_mode: host
+    container_name: cap-valkey
     volumes:
       - valkey-data:/data
-    command: valkey-server --port 6379 --save 60 1 --loglevel warning --maxmemory-policy noeviction --bind 127.0.0.1
+    command: valkey-server --save 60 1 --loglevel warning --maxmemory-policy noeviction
     healthcheck:
-      test: ["CMD", "valkey-cli", "-p", "6379", "ping"]
+      test: ["CMD", "valkey-cli", "ping"]
       interval: 5s
       timeout: 3s
       retries: 5
     restart: unless-stopped
+
+networks:
+  default:
+    name: cap-standalone-network
 
 volumes:
   valkey-data:
