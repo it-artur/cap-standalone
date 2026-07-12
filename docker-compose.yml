@@ -10,6 +10,7 @@ services:
       valkey:
         condition: service_healthy
     restart: unless-stopped
+    networks: []
 
   valkey:
     image: valkey/valkey:9-alpine
@@ -24,6 +25,7 @@ services:
       timeout: 3s
       retries: 5
     restart: unless-stopped
+    networks: []
 
 volumes:
   valkey-data:
