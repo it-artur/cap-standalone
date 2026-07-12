@@ -13,9 +13,8 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=cap-standalone-network"
       - "traefik.http.routers.cap.entrypoints=websecure"
-      - "traefik.http.routers.cap.rule=Host(`cap.itartur.ru`)"
+      - "traefik.http.routers.cap.rule=Host(`cap.itartur.ru`) && !PathPrefix(`/.well-known/acme-challenge/`)"
       - "traefik.http.routers.cap.tls=true"
       - "traefik.http.routers.cap.tls.certresolver=letsencrypt"
       - "traefik.http.services.cap.loadbalancer.server.port=3000"
@@ -32,10 +31,6 @@ services:
       timeout: 3s
       retries: 5
     restart: unless-stopped
-
-networks:
-  default:
-    name: cap-standalone-network
 
 volumes:
   valkey-data:
