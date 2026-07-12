@@ -1,7 +1,6 @@
 services:
   cap:
     image: tiago2/cap:latest
-    container_name: cap
     network_mode: host
     environment:
       ADMIN_KEY: ${ADMIN_KEY:?set ADMIN_KEY in .env or Dokploy secrets}
@@ -10,11 +9,9 @@ services:
       valkey:
         condition: service_healthy
     restart: unless-stopped
-    networks: []
 
   valkey:
     image: valkey/valkey:9-alpine
-    container_name: cap-valkey
     network_mode: host
     volumes:
       - valkey-data:/data
@@ -25,7 +22,6 @@ services:
       timeout: 3s
       retries: 5
     restart: unless-stopped
-    networks: []
 
 volumes:
   valkey-data:
