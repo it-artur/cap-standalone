@@ -15,6 +15,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.cap-public.entrypoints=websecure"
       - "traefik.http.routers.cap-public.rule=Host(`cap.itartur.ru`) && !PathPrefix(`/.well-known/acme-challenge/`)"
+      - "traefik.http.routers.cap-public.service=cap-public"
       - "traefik.http.routers.cap-public.tls=true"
       - "traefik.http.routers.cap-public.tls.certresolver=letsencrypt"
       - "traefik.http.services.cap-public.loadbalancer.server.port=3000"
